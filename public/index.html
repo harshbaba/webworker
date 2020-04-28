@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>App Cache Test</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="stylesheet" href="common/css/reset.css"/>
+<link rel="stylesheet" href="common/css/custom.css"/>
+<link rel="stylesheet" href="common/css/responsive.css"/>
+<link href='https://fonts.googleapis.com/css?family=Roboto:400,700,700italic,400italic,300' rel='stylesheet' type='text/css'>
+</head>
+<body>
+
+<!--page start-->
+<div class="layout-page">
+	<div class="layout-content">
+		<div class="container">
+			<div class="content-main users-grid-main">
+				<div class="users-action-box">
+					<div class="sorting-box">
+						<label>Sort By Alphabetically (User Name)</label>
+						<select id="sort-by">
+							<option value="asc">A-Z</option>
+							<option value="desc">Z-A</option>
+						</select>
+					</div>
+					<div class="pagination-list-box">
+						<ul class="pagination-list">
+							<li class="active">
+								<a href="#" data-pageId="1">1</a>
+							</li>
+							<li>
+									<a href="#" data-pageId="2">2</a>
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div class="users-list-box">
+					<ul class="users-list">
+					</ul>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<div class="layout-overlay">
+		&nbsp;
+</div>
+<div class="layout-popup-wrap">
+	<div class="popup-inner-main">
+		<div class="popup-header">
+			<h3>Name</h3>
+			<a href="#" class="close-popup-btn">X</a>
+		</div>
+		<div class="popup-content">
+			<div class="popup-content-left">
+				<div class="useraddress-box">
+				</div>
+			</div>
+			<div class="popup-content-right">
+
+			</div>
+		</div>
+	</div>
+</div>
+
+<div class="page-loader">
+	<div class="page-loader-main">
+		<img src="common/images/loader-2.gif" alt="" />
+	</div>
+</div>
+
+<script type="text/javascript" src="common/js/jquery-1.12.js"></script>
+<script type="text/javascript" src="common/js/underscore-min.js"></script>
+<script type="text/javascript" src="common/js/custom.js"></script>
+<script>
+	var workerForVersion;
+	
+	function startWorkerForVersion() {
+	  if (typeof(Worker) !== "undefined") {
+		if (typeof(workerForVersion) == "undefined") {
+			workerForVersion = new Worker("common/js/demo_workers.js");
+		}
+		workerForVersion.onmessage = function(event) {
+		  //console.log(event.data);
+		  handleVersion(event.data);
+		};
+	  } else {
+		console.log("Sorry! No Web Worker support.");
+	  }
+	}
+
+	function handleVersion(data){
+		data = JSON.parse(data);
+		//console.log(data);
+		var storedVersion = localStorage.getItem('releaseVersion');
+		if(storedVersion){
+			if(storedVersion != data.version){
+				//alert('new version is available');
+				localStorage.setItem('releaseVersion', data.version);
+				window.location.reload();
+			}
+		}else{
+			localStorage.setItem('releaseVersion', data.version);
+		}
+	}
+
+	startWorkerForVersion();
+
+</script>
+</body>
+</html>
